@@ -12,6 +12,8 @@ SHELL = /bin/bash
 GCOVR ?= gcovr
 GIT   ?= git
 
+DOCKER_COMPOSE ?= docker compose
+
 include make/config.mk
 include make/vendor.mk
 include make/version.mk
@@ -423,26 +425,26 @@ include make/release.mk
 #
 
 dev-shell:
-	docker-compose up --build --remove-orphans -d
+	$(DOCKER_COMPOSE) up --build --remove-orphans -d
 	docker exec -it agent bash -c "sh files/set_path.sh ; bash"
 
 dev-build:
-	docker-compose up --build --remove-orphans -d
+	$(DOCKER_COMPOSE) up --build --remove-orphans -d
 	docker exec -it agent bash -c "sh files/set_path.sh ; make -j4 all"
 
 dev-unit-tests:
-	docker-compose up --build --remove-orphans -d
+	$(DOCKER_COMPOSE) up --build --remove-orphans -d
 	docker exec -it agent bash -c "sh files/set_path.sh ; make -j4 valgrind"
 
 dev-integration-tests:
-	docker-compose up --build --remove-orphans -d
+	$(DOCKER_COMPOSE) up --build --remove-orphans -d
 	docker exec -it agent bash -c "sh files/set_path.sh ; ./bin/integration_runner -agent ./agent/.libs/newrelic.so"
 
 dev-all:
-	docker-compose up --build --remove-orphans -d
+	$(DOCKER_COMPOSE) up --build --remove-orphans -d
 	docker exec -it agent bash -c "sh files/set_path.sh ; make -j4 all valgrind; ./bin/integration_runner -agent ./agent/.libs/newrelic.so"
 
 dev-stop:
-	docker-compose stop
+	$(DOCKER_COMPOSE) stop
 
 # vim: set noet ts=2 sw=2:

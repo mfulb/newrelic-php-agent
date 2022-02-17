@@ -11,7 +11,7 @@ The agent should report Redis metrics for Redis list operations.
 /*SKIPIF
 <?php
 if (version_compare(phpversion(), '8.0.0', '<')) {
-    die("skip: PHP >= 8.0.0 required\n");
+    die("skip:  PHP >= 8.0.0 required\n");
 }
 require("skipif.inc");
 */
@@ -25,30 +25,30 @@ newrelic.datastore_tracer.instance_reporting.enabled = 0
 ok - append A
 ok - append B
 ok - append C
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - retrieve element 0
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - retrieve element 1
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - retrieve element 2
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - retrieve last element
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - retrieve invalid element
 ok - retrieve element 0
 ok - retrieve element 1
 ok - retrieve element 2
-((?s).*?)Deprecated: Method Redis::lRemove((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lRemove((?s).*?)
 ok - remove first occurrence of B
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - A was not removed
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - C was not removed
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - B was removed
 ok - remove missing element
 ok - replace list head
-((?s).*?)Deprecated: Method Redis::lGet((?s).*?)
+((?s).*?)Deprecated:  Method Redis::lGet((?s).*?)
 ok - list head was replaced
 ok - delete list
 */
@@ -143,5 +143,8 @@ function test_redis() {
 
   $redis->close();
 }
+
+# needed for deprecation warnings to appear as expected above
+error_reporting(E_DEPRECATED | error_reporting());
 
 test_redis();
