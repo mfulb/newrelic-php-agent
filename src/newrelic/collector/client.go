@@ -6,20 +6,20 @@
 package collector
 
 import (
-    "crypto/tls"
-    "encoding/json"
-    "fmt"
-    "io/ioutil"
-    "net"
-    "net/http"
-    "net/url"
-    "strings"
-    "time"
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"net/url"
+	"strings"
+	"time"
 
-    "golang.org/x/net/proxy"
+	"golang.org/x/net/proxy"
 
-    "newrelic/log"
-    "newrelic/version"
+	"newrelic/log"
+	"newrelic/version"
 )
 
 type CollectibleFunc func(auditVersion bool) ([]byte, error)
@@ -296,12 +296,15 @@ type clientImpl struct {
 
 func (c *clientImpl) perform(url string, cmd RpmCmd, cs RpmControls) RPMResponse {
     deflated, err := Compress(cmd.Data)
+
     if nil != err {
         return RPMResponse{Err: err}
     }
 
     req, err := http.NewRequest("POST", url, deflated)
+
     if nil != err {
+        log.Debugf("perform: failed to start POST request")
         return RPMResponse{Err: err}
     }
 
@@ -316,6 +319,7 @@ func (c *clientImpl) perform(url string, cmd RpmCmd, cs RpmControls) RPMResponse
 
     resp, err := c.httpClient.Do(req)
     if err != nil {
+        log.Debugf("perform: failed to httpClient.Do() request")
         return RPMResponse{Err: err}
     }
 
@@ -323,12 +327,27 @@ func (c *clientImpl) perform(url string, cmd RpmCmd, cs RpmControls) RPMResponse
 
     r := newRPMResponse(resp.StatusCode)
 
+    log.Debugf("perform: resp/err = %+v | %+v", resp, err)
+
     body, err := ioutil.ReadAll(resp.Body)
-    if nil != err {
+
+    log.Debugf("perform: body/string(body)/len(body)/err = %+v / %s / %d / %+v", body, string(body), len(body), err)
+
+    // if no previous error (from newRPMResponse based on response status code) then
+    // return any error from the ReadAll()
+    if nil == r.Err {
         r.Err = err
-    } else {
+    } 
+
+    // if the response code is 200 parse out the "return_value"
+    // key and return as the body of the response
+    // any other response codes will not have a body to parse
+    if r.StatusCode == 200 {
         r.Body, r.Err = parseResponse(body)
     }
+
+    log.Debugf("perform: returns r = %+v", r)
+
     return r
 }
 type rpmException struct {
@@ -346,6 +365,14 @@ func parseResponse(b []byte) ([]byte, error) {
 	}
 
 	err := json.Unmarshal(b, &r)
+
+    log.Debugf("parseResponse: err = %v", err)
+    log.Debugf("parseResponse: r = %+v", r)
+    log.Debugf("parseResponse: r.ReturnValue = %s", string(r.ReturnValue))
+    if r.Exception != nil {
+        log.Debugf("parseResponse: r.Exception = %s", r.Exception.Error())
+    }
+
 	if nil != err {
 		return nil, err
 	}
