@@ -3389,7 +3389,7 @@ static void nr_txn_add_log_event(nrtxn_t* txn,
   nr_log_event_t* e = NULL;
   bool event_dropped = false;
 
-  nrl_debug("entering nt_txn_add_log_event");
+  nrl_debug(NRL_TXN, "entering nt_txn_add_log_event");
 
   if (nrunlikely(NULL == txn)) {
     return;
@@ -3399,18 +3399,18 @@ static void nr_txn_add_log_event(nrtxn_t* txn,
     return;
   }
 
-  nrl_debug("nt_txn_add_log_event: log forwarding enabled");
+  nrl_debug(NRL_TXN, "nt_txn_add_log_event: log forwarding enabled");
 
   if (nr_strempty(log_message)) {
     return;
   }
 
-  nrl_debug("nt_txn_add_log_event: string not empty");
+  nrl_debug(NRL_TXN, "nt_txn_add_log_event: string not empty");
 
   /* log events filtered out by log level will go into the Dropped metric */
   if (!nr_txn_log_forwarding_log_level_verify(txn, log_level_name)) {
     event_dropped = true;
-    nrl_debug("nt_txn_add_log_event: event dropped due to threshold");
+    nrl_debug(NRL_TXN, "nt_txn_add_log_event: event dropped due to threshold");
 
   } else {
     /* event passed log level filter so add it */
@@ -3420,7 +3420,7 @@ static void nr_txn_add_log_event(nrtxn_t* txn,
       event_dropped = true;
     } else {
       event_dropped = nr_log_events_add_event(txn->log_events, e);
-      nrl_debug("nt_txn_add_log_event: event added, event_dropped = %d", event_dropped);
+      nrl_debug(NRL_TXN, "nt_txn_add_log_event: event added, event_dropped = %d", event_dropped);
 
     }
   }
@@ -3458,7 +3458,7 @@ void nr_txn_record_log_event(nrtxn_t* txn,
     return;
   }
 
-  nrl_debug("Adding log message: level=%s, message=%s", log_level_name, log_message);
+  nrl_debug(NRL_TXN, "Adding log message: level=%s, message=%s", log_level_name, log_message);
 
   nr_txn_add_log_event(txn, log_level_name, log_message, timestamp, app);
 
