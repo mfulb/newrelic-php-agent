@@ -121,7 +121,7 @@ static uint32_t nr_txndata_prepend_log_events(nr_flatbuffer_t* fb,
   const size_t event_align = sizeof(uint32_t);
 
   event_count = nr_log_events_number_saved(txn->log_events);
-  nrl_debug(NRL_TXN, "nr_txndata_prepend_log_events: num events = %d", event_count)
+  nrl_debug(NRL_TXN, "nr_txndata_prepend_log_events: num events = %d", event_count);
   if (0 == event_count) {
     return 0;
   } else if (event_count > log_event_limit) {
